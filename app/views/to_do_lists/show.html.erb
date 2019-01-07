@@ -2,10 +2,25 @@
   <%= @to_do_list.name %>
 </h3>
 
-<ul>
+<ul id="js-to-do-items" data-sort-url="<%= sort_to_do_list_path(@to_do_list) %>">
   <% @to_do_items.each do |to_do_item| %>
-    <li>
-      <%= to_do_item.position %> <%= to_do_item.name %>
+    <li id="to-do-item-<%= to_do_item.id %>">
+      <%= to_do_item.name %>
     </li>
   <% end %>
 </ul>
+
+<script type="text/javascript">
+  $('#js-to-do-items').sortable({
+    update: function(event, ui) {
+      $.ajax({
+        headers: {
+          'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+        },
+        url: $(this).data('sort-url'),
+        type: 'POST',
+        data: $(this).sortable('serialize')
+      })
+    }
+  });
+</script>
